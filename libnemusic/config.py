@@ -10,7 +10,11 @@ _config_table = {
 	"BaseURL" : r"http://music.163.com/", 
 	"CookiePath" : "/tmp/nemusic.cookies", 
 	"UserAgent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0",
-	"Proxies"   : "115.159.5.247:80"
+	"Proxies"   : "115.159.5.247:80",
+	"Timeout"   : 15,
+	"Retry"     : 3,
+	"EnableCache" : True,
+	"CacheDir":  "/tmp/nemusic_cache"
 }
 
 def get_config(key):

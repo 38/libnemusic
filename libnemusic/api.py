@@ -17,7 +17,7 @@ class AlbumDetailResult(RemoteResult):
 class Album(model.NamedObject):
 	artist = model.RequireModel('Artist')
 	company = model.String
-	@RPCMethod("GET", "api/album/", AlbumDetailResult, dumpfile = sys.stderr)
+	@RPCMethod("GET", "api/album/", AlbumDetailResult)
 	def details(self):
 		return {"__suffix__" : self.id}
 

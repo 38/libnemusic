@@ -6,24 +6,31 @@ import sys
 from StringIO import StringIO
 import cache
 class NEMusicSession:
-	_base_url = config.get_config("BaseURL")
-	_proxies  = config.get_config("Proxies") 
-	_cookies  = config.get_config("CookiePath")
-	_timeout  = config.get_config("Timeout")
-	_retry    = config.get_config("Retry")
-	_cache    = config.get_config("EnableCache")
+	_base_url = None 
+	_proxies  = None 
+	_cookies  = None 
+	_timeout  = None 
+	_retry    = None 
+	_cache    = None 
+	_headers  = None 
 	_cache_object = None
-	_headers  = [
-            'Accept:*/*',
-            'Accept-Language:zh-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4',
-            'Connection:keep-alive',
-            'Content-Type:application/x-www-form-urlencoded',
-            'Host:music.163.com',
-            'Referer:http://music.163.com/search/',
+	def _prepare(self):
+		if not NEMusicSession._base_url:
+			NEMusicSession._base_url = config.get_config("BaseURL")     
+			NEMusicSession._proxies  = config.get_config("Proxies")     
+			NEMusicSession._cookies  = config.get_config("CookiePath")  
+			NEMusicSession._timeout  = config.get_config("Timeout")     
+			NEMusicSession._retry    = config.get_config("Retry")       
+			NEMusicSession._cache    = config.get_config("EnableCache") 
+			NEMusicSession._headers  = [
+			'Accept:*/*',
+			'Accept-Language:zh-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4',
+			'Connection:keep-alive',
+			'Content-Type:application/x-www-form-urlencoded',
+			'Host:music.163.com',
+			'Referer:http://music.163.com/search/',
 			'User-Agent:' + config.get_config("UserAgent")
-	]
-	def __init__(self):
-		self._base_url = NEMusicSession._base_url
+		]
 		if self._cache and not self._cache_object:
 			self._cache_object = cache.APICache(config.get_config("CacheDir"))
 
@@ -51,6 +58,7 @@ class NEMusicSession:
 		return buffer
 	
 	def _do_request(self, method, path, data, dumpfile, use_cache):
+		self._prepare()
 		if "__suffix__" in data: 
 			path = path + str(data["__suffix__"])
 			del data["__suffix__"]
@@ -59,11 +67,11 @@ class NEMusicSession:
 			if cached: return cached
 		if method == "GET":
 			if data: 
-				url = "".join([self._base_url, path, "?", urllib.urlencode(data)])
+				url = "".join([NEMusicSession._base_url, path, "?", urllib.urlencode(data)])
 			else:
-				url = "".join([self._base_url, path])
+				url = "".join([NEMusicSession._base_url, path])
 		elif method == "POST":
-			url = "".join([self._base_url, path])
+			url = "".join([NEMusicSession._base_url, path])
 		last_exception = None
 		for i in xrange(NEMusicSession._retry):
 			try:

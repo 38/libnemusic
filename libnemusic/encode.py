@@ -5,17 +5,21 @@ import json
 import base64
 from Crypto.Cipher import AES
 
-_xor_key = bytearray(config.get_config("XorKey"))
-_xor_key_len = len(_xor_key)
+_xor_key = None
+_xor_key_len = -1
 
-_rsa_modulus = config.get_config("RSAModulus")
-_rsa_pubkey  = config.get_config("RSAPubKey")
+_rsa_modulus = -1
+_rsa_pubkey  = -1
 
-_aes_nonce = config.get_config("AESNonce")
+_aes_nonce = None
 
 def encode_id(song_id):
 	"""Convert the plain text song id to encoded version
 	   song_id the song id to convert """
+	global _xor_key, _xor_key_len
+	if not _xor_key:
+		_xor_key = bytearray(config.get_config("XorKey", required = True))
+		_xor_key_len = len(_xor_key)
 	song_id = bytearray(song_id)
 	curpos = 0
 	for i in xrange(len(song_id)):
@@ -28,6 +32,10 @@ def _get_aes_key():
 	return os.urandom(16).encode("hex")
 
 def _do_rsa(message):
+	global _rsa_modulus, _rsa_pubkey
+	if _rsa_modulus == -1:
+		_rsa_modulus = config.get_config("RSAModulus", required = True)
+		_rsa_pubkey  = config.get_config("RSAPubKey", required = True)
 	data = int(message[::-1].encode('hex'), 16) % _rsa_modulus
 	expo = data
 	indx = _rsa_pubkey
@@ -53,6 +61,9 @@ def encode_account(account, password, phone = False):
 	   account: The account ID, or the phone number
 	   password: The password is going to use
 	   phone: If this account Id is the phone Number"""
+	global _aes_nonce
+	if not _aes_nonce:
+		_aes_nonce = config.get_config("AESNonce", required = True)
 	data = {'password' : password, 'rememberLogin' : 'true' }
 	if phone: 
 		data['phone'] = account

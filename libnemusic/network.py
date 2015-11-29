@@ -47,7 +47,7 @@ class NEMusicSession:
 		self._curl.setopt(self._curl.URL, url)
 		self._curl.setopt(self._curl.WRITEFUNCTION, buffer.write)
 		self._curl.setopt(self._curl.TIMEOUT, NEMusicSession._timeout)
-		self._curl.setopt(self._curl.HEADERFUNCTION, sys.stdout.write)
+		#self._curl.setopt(self._curl.HEADERFUNCTION, sys.stdout.write)
 		return buffer
 	
 	def _do_request(self, method, path, data, dumpfile, use_cache):

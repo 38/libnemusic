@@ -26,7 +26,6 @@ class APICache:
 		return None
 	def update(self, timestamp, method, url, request_data, response_data):
 		key = self._key(method, url, request_data)
-		print key
 		try:
 			pickle.dump(CachedItem(timestamp, method, url, request_data, response_data), file(key, "w"), pickle.HIGHEST_PROTOCOL)
 			return True

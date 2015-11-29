@@ -7,8 +7,19 @@ import random
 import sys
 
 ####### Album ############
+class AlbumDetailResult(RemoteResult):
+	class album(model.NamedObject):
+		class artists(model.List): Element = model.RequireModel('Artist')
+		size = model.Integer
+		company = model.String
+		class songs(model.List): Element = model.RequireModel('SongInfo')
+	
 class Album(model.NamedObject):
 	artist = model.RequireModel('Artist')
+	company = model.String
+	@RPCMethod("GET", "api/album/", AlbumDetailResult, dumpfile = sys.stderr)
+	def details(self):
+		return {"__suffix__" : self.id}
 
 class AlbumSearchResult(RemoteResult):
 	class result(model.Dictionary):
@@ -25,7 +36,7 @@ class ArtistDetialResult(RemoteResult):
 	more   = model.Boolean
 
 class Artist(model.NamedObject): 
-	@RPCMethod("GET", "api/artist/", ArtistDetialResult, dumpfile = sys.stdout)
+	@RPCMethod("GET", "api/artist/", ArtistDetialResult)
 	def details(self):
 		return {"__suffix__" : self.id}
 
@@ -46,14 +57,14 @@ class Mp3Info(model.NamedObject):
 
 class SongInfo(model.NamedObject):
 	mp3Url    = model.String
-	artist    = model.RequireModel('Artist')
+	class artists(model.List): Element = model.RequireModel('Artist')
 	hMusic    = model.RequireModel('Mp3Info')
 	mMusic    = model.RequireModel('Mp3Info')
 	lMusic    = model.RequireModel('Mp3Info')
 	def __getitem__(self, quality):
 		if quality == "high" and self.hMusic: return self.hMusic.geturl()
 		if (quality == "high" or quality == "medium") and self.mMusic: return self.mMusic.geturl()
-		if self.lMusic: return self.lMusic().geturl()
+		if self.lMusic: return self.lMusic.geturl()
 		return self.mp3Url
 
 class SongDetialResult(RemoteResult):
@@ -77,7 +88,7 @@ class SongSearchResult(RemoteResult):
 def search_song(keyword, offset = 0, limit = 60):
 	return {'s': keyword, 'type': 1, 'total': True, 'offset': offset, 'limit': limit}
 
-@RPCFunction("POST", "api/search/get", AlbumSearchResult)
+@RPCFunction("POST", "api/search/get", AlbumSearchResult, dumpfile = sys.stdout)
 def search_album(keyword, offset = 0, limit = 60):
 	return {'s': keyword, 'type': 10, 'total': True, 'offset': offset, 'limit': limit}
 

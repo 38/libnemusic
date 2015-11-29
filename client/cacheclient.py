@@ -18,9 +18,12 @@ class CacheClient(client.Client):
 		self._header_func("Content-Type:  audio/mepg\n")
 		self._header_func("Content-Length: %d\n"%os.fstat(self._cache_file.fileno()).st_size)
 		self._header_func("NE-Client-Type: Cached\n")
-		if not block_size: block_size = 65536
+		if not block_size: block_size = 1024
 		while True:
-			next_block = self._cache_file.read(block_size)
+			if block_size > 0 : 
+				next_block = self._cache_file.read(block_size)
+			else: 
+				next_block = self._cache_file.read()
 			if not next_block: break
 			self._write_func(next_block)
 		self._cache_file.close()

@@ -19,7 +19,6 @@ class HttpClient(client.Client):
 		self._chance = 0
 	def _initialize_conn(self):
 		def on_data_received(data):
-			sys.stderr.write("%d\n"%len(data))
 			if self._cache_file: 
 				self._cache_file.write(data)
 			if data: self._chance = getopt("Retry")

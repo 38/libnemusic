@@ -18,18 +18,27 @@ class RPCBase:
 		self._how = session[how] if session else RPCBase.session[how]
 		self._where = where
 		self._what = result_model
-		self._dump = dumpfile
-		self._cache = use_cache
-	
+		self._opts = {'dumpfile': dumpfile, 'usecache': use_cache}
+	def _getopt(self, key, kwargs):
+		ret = self._opts[key]
+		if key in kwargs: 
+			ret = kwargs[key]
+			del kwargs[key]
+		return ret
 class RPCFunction(RPCBase):
 	def __call__(self, modifer):
-		def do_rpc_call(**kwargs): return self._what(json.loads(self._how(self._where, modifer(**kwargs), self._dump, self._cache)))
+		def do_rpc_call(**kwargs): 
+			dump  = self._getopt("dumpfile", kwargs)
+			cache = self._getopt("usecache", kwargs)
+			return self._what(json.loads(self._how(self._where, modifer(**kwargs), dump, cache)))
 		return do_rpc_call
 
 class RPCMethod(RPCBase):
 	def __call__(self, modifer):
 		decobj = self
 		def do_rpc_call(self, **kwargs): 
-			return decobj._what(json.loads(decobj._how(decobj._where, modifer(self, **kwargs), decobj._dump, decobj._cache)))
+			dump  = decobj._getopt("dumpfile", kwargs)
+			cache = decobj._getopt("usecache", kwargs)
+			return decobj._what(json.loads(decobj._how(decobj._where, modifer(self, **kwargs), dump, cache)))
 		return do_rpc_call
 	

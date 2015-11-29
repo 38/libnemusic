@@ -6,10 +6,10 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 	def do_GET(self):
 		path = self.path
 		self.headerbuf = ""
+		self.headerwritten = False
 		def _header(data):
 			self.headerbuf += data
 			if '\n' in self.headerbuf:
-				print self.headerbuf
 				headers = self.headerbuf.split('\n')
 				for header in headers[:-1]:
 					if ':' not in header: continue
@@ -19,14 +19,16 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 					self.send_header(k, v)
 				self.headerbuf = headers[-1]
 		def _content(data):
-			self.end_headers()
+			if not self.headerwritten:
+				self.end_headers()
+				self.headerwritten = True
 			self.wfile.write(data)
 		try:
+			print self.headers
 			if len(path.split('/')) == 3:
 				c = client.getclient(path, _content, _header)
 				self.send_response(200)
 				c.perform()
-				
 			else:
 				self.send_response(404)
 				self.send_header("Content-Type", "text/html")

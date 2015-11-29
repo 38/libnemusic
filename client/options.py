@@ -7,7 +7,7 @@ _options = {
 		"Retry"    : 3
 }
 
-def setopt(**kwargs):
+def setopt(kwargs):
 	for k,v in kwargs.items():
 		_options[k] = v
 

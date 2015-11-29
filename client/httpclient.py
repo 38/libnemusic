@@ -5,8 +5,8 @@ import sys
 import cache
 import random
 class HttpClient(client.Client):
-	_nextserver = random.randint(1,2)
-	def __init__(self, path, write_func):
+	_nextserver = random.randint(0,1)
+	def __init__(self, path, write_func, header_func):
 		self._host = getopt("Servers")[HttpClient._nextserver]
 		self._url =  "%s%s"%(self._host, path)
 		self._path = path
@@ -15,6 +15,8 @@ class HttpClient(client.Client):
 		self._curl = None
 		self._cache = cache.getcache()
 		self._cache_file = None
+		self._header_func = header_func
+		self._chance = 0
 	def _initialize_conn(self):
 		def on_data_received(data):
 			sys.stderr.write("%d\n"%len(data))
@@ -32,13 +34,11 @@ class HttpClient(client.Client):
 			'Host: %s'%self._host.replace("http://", ""),
 			'User-Agent: %s'%getopt("UserAgent")
 		])"""
-		print self._url
 		self._curl.setopt(self._curl.URL, self._url)
 		self._curl.setopt(self._curl.WRITEFUNCTION, on_data_received)
 		self._curl.setopt(self._curl.TIMEOUT, getopt("Timeout"))
 		if getopt("Proxies"): 
 			self._curl.setopt(self._curl.PROXY, getopt("Proxies"))
-		self._curl.setopt(self._curl.VERBOSE,1)
 	def __del__(self):
 		if self._curl:
 			self._curl.close()
@@ -48,6 +48,7 @@ class HttpClient(client.Client):
 			self._curl.setopt(self._curl.RANGE, "%d-"%self._current_pos)
 		else:
 			self._cache_file = self._cache.open(self._path)
+			self._curl.setopt(self._curl.HEADERFUNCTION, self._header_func)
 		try:
 			self._curl.perform()
 		except pycurl.error as e:
@@ -58,5 +59,5 @@ class HttpClient(client.Client):
 		self._cache.close(self._path)		
 
 if __name__ == "__main__":
-	h = HttpClient("/VpNWWjzlqL9mvAryWrIfBw==/5708664371463047.mp3", sys.stdout.write)
+	h = HttpClient("/VpNWWjzlqL9mvAryWrIfBw==/5708664371463047.mp3", sys.stdout.write, sys.stdout.write)
 	h.perform()

@@ -54,6 +54,8 @@ class Mp3Info(model.NamedObject):
 	biterate  = model.Integer
 	def geturl(self):
 		return "http://m%s.music.126.net/%s/%s.mp3" % (random.randrange(1, 3), encode.encode_id(str(self.dfsId)) , self.dfsId)
+	def getpath(self):
+		return "/%s/%s.mp3" % (encode.encode_id(str(self.dfsId)), self.dfsId)
 
 class SongInfo(model.NamedObject):
 	mp3Url    = model.String
@@ -88,7 +90,7 @@ class SongSearchResult(RemoteResult):
 def search_song(keyword, offset = 0, limit = 60):
 	return {'s': keyword, 'type': 1, 'total': True, 'offset': offset, 'limit': limit}
 
-@RPCFunction("POST", "api/search/get", AlbumSearchResult, dumpfile = sys.stdout)
+@RPCFunction("POST", "api/search/get", AlbumSearchResult)
 def search_album(keyword, offset = 0, limit = 60):
 	return {'s': keyword, 'type': 10, 'total': True, 'offset': offset, 'limit': limit}
 

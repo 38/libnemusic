@@ -26,7 +26,7 @@ class Dictionary(Model):
 				model = getattr(self, member)
 				if '__trait__' not in dir(model): continue
 				if model.__trait__ == PRIMITIVE: setattr(self, member, obj.get(member, None))
-				elif model.__trait__ == DICTIONARY: setattr(self, member, model(obj[member]) if member in obj else None)
+				elif model.__trait__ == DICTIONARY: setattr(self, member, model(obj[member]) if member in obj and obj[member] != None else None)
 				else: setattr(self, member, map(lambda x: model.Element(x), obj.get(member, [])))
 
 class NamedObject(Dictionary):

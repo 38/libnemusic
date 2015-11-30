@@ -10,7 +10,7 @@ class PlaylistItem:
 	def play(self, player):
 		player.play(self.url)
 	def __str__(self):
-		return "%s\t%s"%(self.disp_name, self.artist)
+		return self.artist + " - " +  self.disp_name
 class Playlist(list):
 	PLAYING = 0
 	STOPPED = 1
@@ -30,7 +30,8 @@ class Playlist(list):
 	def __delitem__(self, idx):
 		if self._current == idx:
 			list.__delitem__(self, idx)
-			self.play()
+			if self._state == self.PLAYING: 
+				self.play()
 		elif self._current > idx:
 			self._current -= 1
 			list.__delitem__(self, idx)

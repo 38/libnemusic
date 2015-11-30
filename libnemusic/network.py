@@ -64,7 +64,12 @@ class NEMusicSession:
 			del data["__suffix__"]
 		if use_cache:
 			cached = self._query_cache(method, path, data)
-			if cached: return cached
+			if cached:
+				if dumpfile:
+					dumpfile.write("==> Cached %s %s\n<== "%(method, path))
+					dumpfile.write(cached)
+					dumpfile.write("\n")
+				return cached
 		if method == "GET":
 			if data: 
 				url = "".join([NEMusicSession._base_url, path, "?", urllib.urlencode(data)])

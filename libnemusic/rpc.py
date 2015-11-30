@@ -1,7 +1,7 @@
 import model
 import network
 import json
-
+import sys
 class RemoteResult(model.Dictionary):
 	"""This is the base data model for the RPC result"""
 	code = model.String
@@ -9,7 +9,7 @@ class RemoteResult(model.Dictionary):
 class RPCBase:
 	"""The remote procedure decorator"""
 	session = network.NEMusicSession()
-	def __init__(self, how, where, result_model, session = None, dumpfile = None, use_cache = True):
+	def __init__(self, how, where, result_model, session = None, dumpfile = None , use_cache = True):
 		"""how : "GET" or "POST", 
 		   where : url, 
 		   outtype : the result model, 

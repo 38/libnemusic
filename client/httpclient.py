@@ -58,7 +58,9 @@ class HttpClient(client.Client):
 			if self._chance > 0: 
 				self._chance -= 1
 				self.perform()
-			else: raise e
+			else:
+				self._cache.abort(self._path)	
+				raise e	
 		self._cache.close(self._path)		
 
 if __name__ == "__main__":

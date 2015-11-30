@@ -5,6 +5,9 @@ import model
 import encode
 import random
 import sys
+class HTTPStatusError(Exception): 
+	def __init__(self, code):
+		Exception.__init__(self, "Unexpected HTTP status code %s" % code)
 
 ####### Album ############
 class AlbumDetailResult(RemoteResult):
@@ -20,6 +23,11 @@ class Album(model.NamedObject):
 	@RPCMethod("GET", "api/album/", AlbumDetailResult)
 	def details(self):
 		return {"__suffix__" : self.id}
+	def get_songs(self):
+		details = self.details()
+		if details.code != 200: raise HTTPStatusError(details.code)
+		for song in details.album.songs: 
+			yield song
 
 class AlbumSearchResult(RemoteResult):
 	class result(model.Dictionary):
@@ -79,13 +87,20 @@ class Song(model.NamedObject):
 	@RPCMethod("GET", "api/song/detail", SongDetialResult)
 	def details(self):
 		return {'id' : self.id, 'ids' : [self.id]}
+	def info(self):
+		details = self.details()
+		if details.code != 200: raise HTTPStatusError(details.code)
+		return details.songs[0]
 
 class SongSearchResult(RemoteResult): 
 	class result(model.Dictionary): 
 		songCount = model.Integer
 		class songs(model.List): Element = model.RequireModel('Song')
+	def get_songs(self): 
+		if self.code != 200: raise HTTPStatusError(self.code)
+		for song in self.result.songs:
+			yield song	
 
-		
 @RPCFunction("POST", "api/search/get", SongSearchResult)
 def search_song(keyword, offset = 0, limit = 60):
 	return {'s': keyword, 'type': 1, 'total': True, 'offset': offset, 'limit': limit}
@@ -99,6 +114,3 @@ def search_artist(keyword, offset = 0, limit = 60):
 	return {'s': keyword, 'type': 100, 'total': True, 'offset': offset, 'limit': limit}
 
 model.link_model(globals())
-if __name__ == "__main__":
-	#print search_song(keyword = "black or white").result.songs[0].details().songs[0]["high"]
-	print search_song(keyword = "安和桥").result.songs[0].details().songs[0]["high"]	

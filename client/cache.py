@@ -24,8 +24,10 @@ class DataCache:
 	def query(self, path):
 		key = self._key(path)
 		if os.path.exists(key) and not os.path.isdir(key):
+			print "[Cache] Open unused " + key + " for read"
 			return (DataCache.FILE_CLOSED , file(key, "rb"))
 		if key in self._file_obj_dict:
+			print "[Cache] Open " + key + " for read"
 			return (DataCache.FILE_OPEN, file(key + ".tmp", "rb"))
 
 	def isopenstatus(self, path):
@@ -33,7 +35,10 @@ class DataCache:
 
 	def open(self, path):
 		key = self._key(path)
-		if key in self._file_obj_dict: return self._file_obj_dict[key]
+		if key in self._file_obj_dict:
+			print "[Cache] Cache item " + path + " is already updating"
+			return None
+		print "[Cache] Opened cache item " + path + " for update"
 		temp = key + ".tmp"
 		self._file_obj_dict[key] = file(temp, "wb")
 		return self._file_obj_dict[key]
@@ -42,9 +47,19 @@ class DataCache:
 		key = self._key(path)
 		temp_key = key + ".tmp"
 		if key not in self._file_obj_dict: return
+		print "[Cache] Closed cache item " + path + " for update"
+		del self._file_obj_dict[key]
 		self._file_obj_dict[key].close()
 		os.rename(temp_key, key)
+		
+	def abort(self, path):
+		key = self._key(path)
+		temp_key = key + ".tmp"
+		if key not in self._file_obj_dict: return
+		print "[Cache] Aborted cache item " + path + " for update"
 		del self._file_obj_dict[key]
+		self._file_obj_dict[key].close()
+		os.remove(temp_key)	
 
 _cache = None
 

@@ -60,7 +60,7 @@ class DataCache:
 		print "[Cache] Aborted cache item update for" + path
 		fp = self._file_obj_dict[key]
 		del self._file_obj_dict[key]
-		self._file_obj_dict[key].close()
+		fp.close()
 		os.remove(temp_key)	
 
 _cache = None

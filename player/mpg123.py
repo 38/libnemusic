@@ -37,6 +37,7 @@ class Mpg123:
 			while not self._stopped:
 				msg = self._proc.stdout.readline().strip()
 				msgtype, msgbody= msg[1], msg[3:]
+				#if msgtype != 'F': print msg
 				if msgtype == 'R':
 					self._version = msgbody
 				elif msgtype == 'I':
@@ -65,7 +66,7 @@ class Mpg123:
 					self._status = int(v)
 					self._on_status_changed(self)	
 				elif msgtype == 'E':
-					self._last_error = v
+					self._last_error = msgbody
 				elif msgtype == 'V': 
 					self._volumn = float(msgbody[:-1])
 		self._thread = threading.Thread(target = _update_status)

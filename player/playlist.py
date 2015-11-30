@@ -40,7 +40,7 @@ class Playlist(list):
 	def play(self, begin = None):
 		def on_status_changed(player):
 			if player['status'] == player.STOPPED:
-				if self._state == self.PLAYING: 
+				if self._state == self.PLAYING:
 					self.play(self._get_next())
 			self._sc_handler(player)
 		if begin != None:

@@ -47,16 +47,18 @@ class DataCache:
 		key = self._key(path)
 		temp_key = key + ".tmp"
 		if key not in self._file_obj_dict: return
-		print "[Cache] Closed cache item " + path + " for update"
+		print "[Cache] Finished updating cache item " + path
+		fp = self._file_obj_dict[key]
 		del self._file_obj_dict[key]
-		self._file_obj_dict[key].close()
+		fp.close()
 		os.rename(temp_key, key)
 		
 	def abort(self, path):
 		key = self._key(path)
 		temp_key = key + ".tmp"
 		if key not in self._file_obj_dict: return
-		print "[Cache] Aborted cache item " + path + " for update"
+		print "[Cache] Aborted cache item update for" + path
+		fp = self._file_obj_dict[key]
 		del self._file_obj_dict[key]
 		self._file_obj_dict[key].close()
 		os.remove(temp_key)	

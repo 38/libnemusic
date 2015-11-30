@@ -39,6 +39,7 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 				self.end_headers()
 				self.wfile.write("<html><body>HTTP 404 - Not Found</body></html>")
 		except Exception as e:
+			traceback.print_exc(e)
 			self.send_response(500)
 			self.send_header("Content-Type", "text/html")
 			self.end_headers()

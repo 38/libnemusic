@@ -13,7 +13,7 @@ class Service:
 		if self._service_proc: 
 			self._service_proc.terminate()
 
-service = Service(file("/tmp/nemusic_server.log", "w"))
+#service = Service(file("/tmp/nemusic_server.log", "w"))
 
 pl = player.playlist.Playlist()
 

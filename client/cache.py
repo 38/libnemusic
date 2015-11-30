@@ -19,6 +19,8 @@ class DataCache:
 		key = self._key(path)
 		if os.path.exists(key) and not os.path.isdir(key):
 			return True
+		if key in self._file_obj_dct:
+			return True
 		return False
 
 	def query(self, path):

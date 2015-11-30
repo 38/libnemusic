@@ -49,5 +49,5 @@ class ThreadedHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer)
 
 if __name__ == "__main__":
 	server_class = ThreadedHTTPServer
-	httpd = server_class(("127.0.0.1", 8000), ServerHandler)
+	httpd = server_class(("0.0.0.0", 8000), ServerHandler)
 	httpd.serve_forever()

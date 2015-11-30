@@ -2,6 +2,8 @@ import os
 from options import getopt
 
 class DataCache:
+	FILE_CLOSED = 0
+	FILE_OPEN   = 1
 	def __init__(self, cache_dir):
 		if not os.path.exists(cache_dir):
 			os.mkdir(cache_dir, 0777)
@@ -22,8 +24,13 @@ class DataCache:
 	def query(self, path):
 		key = self._key(path)
 		if os.path.exists(key) and not os.path.isdir(key):
-			return file(key, "rb")
-	
+			return (DataCache.FILE_CLOSED , file(key, "rb"))
+		if key in self._file_obj_dict:
+			return (DataCache.FILE_OPEN, file(key + ".tmp", "rb"))
+
+	def isopenstatus(self, path):
+		return self._key(path) in self._file_obj_dict
+
 	def open(self, path):
 		key = self._key(path)
 		if key in self._file_obj_dict: return self._file_obj_dict[key]

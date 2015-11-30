@@ -4,6 +4,7 @@ import pycurl
 import sys
 import cache
 import random
+import traceback
 class HttpClient(client.Client):
 	_nextserver = random.randint(0,1)
 	def __init__(self, path, write_func, header_func):
@@ -22,17 +23,20 @@ class HttpClient(client.Client):
 			if self._cache_file: 
 				self._cache_file.write(data)
 			if data: self._chance = getopt("Retry")
-			return self._data_receive(data)
+			try:
+				return self._data_receive(data)
+			except Exception as e:
+				traceback.print_exc(e)
 		if self._curl: self._curl.close()
 		self._curl = pycurl.Curl()
-		"""self._curl.setopt(self._curl.HTTPHEADER, [
+		self._curl.setopt(self._curl.HTTPHEADER, [
 			'Accept: */*',
 			'Accept-Language:z h-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4',
 			'Proxy-Connection: keep-alive',
 			'Content-Type: application/x-www-form-urlencoded',
 			'Host: %s'%self._host.replace("http://", ""),
 			'User-Agent: %s'%getopt("UserAgent")
-		])"""
+		])
 		self._curl.setopt(self._curl.URL, self._url)
 		self._curl.setopt(self._curl.WRITEFUNCTION, on_data_received)
 		self._curl.setopt(self._curl.TIMEOUT, getopt("Timeout"))

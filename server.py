@@ -1,6 +1,8 @@
+#!/usr/bin/env python
 import BaseHTTPServer
 import client
 import traceback
+import SocketServer
 
 class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 	def do_GET(self):
@@ -18,6 +20,7 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 					if k == "Accept-Ranges": continue
 					self.send_header(k, v)
 				self.headerbuf = headers[-1]
+			self.send_header('Connection', 'close')
 		def _content(data):
 			if not self.headerwritten:
 				self.end_headers()
@@ -29,6 +32,7 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 				c = client.getclient(path, _content, _header)
 				self.send_response(200)
 				c.perform()
+				self.wfile.close()
 			else:
 				self.send_response(404)
 				self.send_header("Content-Type", "text/html")
@@ -39,8 +43,10 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.send_header("Content-Type", "text/html")
 			self.end_headers()
 			self.wfile.write("<html> <body>HTTP 500 - Server Internal Error <br> %s </body> </html>" % e)
-			traceback.print_exc(e)
+			
+class ThreadedHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer): pass
+
 if __name__ == "__main__":
-	server_class = BaseHTTPServer.HTTPServer
+	server_class = ThreadedHTTPServer
 	httpd = server_class(("127.0.0.1", 8000), ServerHandler)
 	httpd.serve_forever()

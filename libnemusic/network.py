@@ -1,4 +1,4 @@
-import config
+from options import getopt
 import pycurl
 from cookielib import LWPCookieJar
 import urllib
@@ -16,12 +16,12 @@ class NEMusicSession:
 	_cache_object = None
 	def _prepare(self):
 		if not NEMusicSession._base_url:
-			NEMusicSession._base_url = config.get_config("BaseURL")     
-			NEMusicSession._proxies  = config.get_config("Proxies")     
-			NEMusicSession._cookies  = config.get_config("CookiePath")  
-			NEMusicSession._timeout  = config.get_config("Timeout")     
-			NEMusicSession._retry    = config.get_config("Retry")       
-			NEMusicSession._cache    = config.get_config("EnableCache") 
+			NEMusicSession._base_url = getopt("BaseURL")     
+			NEMusicSession._proxies  = getopt("Proxies")     
+			NEMusicSession._cookies  = getopt("CookiePath")  
+			NEMusicSession._timeout  = getopt("Timeout")     
+			NEMusicSession._retry    = getopt("Retry")       
+			NEMusicSession._cache    = getopt("EnableCache") 
 			NEMusicSession._headers  = [
 			'Accept:*/*',
 			'Accept-Language:zh-CN,zh;q=0.8,gl;q=0.6,zh-TW;q=0.4',
@@ -29,10 +29,10 @@ class NEMusicSession:
 			'Content-Type:application/x-www-form-urlencoded',
 			'Host:music.163.com',
 			'Referer:http://music.163.com/search/',
-			'User-Agent:' + config.get_config("UserAgent")
+			'User-Agent:' + getopt("UserAgent")
 		]
 		if self._cache and not self._cache_object:
-			self._cache_object = cache.APICache(config.get_config("CacheDir"))
+			self._cache_object = cache.APICache(getopt("CacheDir"))
 
 	def _query_cache(self, method, path, request_data):
 		if self._cache_object:

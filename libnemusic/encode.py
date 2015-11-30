@@ -1,4 +1,4 @@
-import config
+from options import getopt
 import hashlib
 import os
 import json
@@ -18,7 +18,7 @@ def encode_id(song_id):
 	   song_id the song id to convert """
 	global _xor_key, _xor_key_len
 	if not _xor_key:
-		_xor_key = bytearray(config.get_config("XorKey", required = True))
+		_xor_key = bytearray(getopt("XorKey", required = True))
 		_xor_key_len = len(_xor_key)
 	song_id = bytearray(song_id)
 	curpos = 0
@@ -34,8 +34,8 @@ def _get_aes_key():
 def _do_rsa(message):
 	global _rsa_modulus, _rsa_pubkey
 	if _rsa_modulus == -1:
-		_rsa_modulus = config.get_config("RSAModulus", required = True)
-		_rsa_pubkey  = config.get_config("RSAPubKey", required = True)
+		_rsa_modulus = getopt("RSAModulus", required = True)
+		_rsa_pubkey  = getopt("RSAPubKey", required = True)
 	data = int(message[::-1].encode('hex'), 16) % _rsa_modulus
 	expo = data
 	indx = _rsa_pubkey
@@ -63,7 +63,7 @@ def encode_account(account, password, phone = False):
 	   phone: If this account Id is the phone Number"""
 	global _aes_nonce
 	if not _aes_nonce:
-		_aes_nonce = config.get_config("AESNonce", required = True)
+		_aes_nonce = getopt("AESNonce", required = True)
 	data = {'password' : password, 'rememberLogin' : 'true' }
 	if phone: 
 		data['phone'] = account

@@ -27,6 +27,15 @@ class Playlist(list):
 		self._player_cb = kwargs
 		self._sc_handler = lambda _: None
 		list.__init__(self)
+	def __delitem__(self, idx):
+		if self._current == idx:
+			list.__delitem__(self, idx)
+			self.play()
+		elif self._current > idx:
+			self._current -= 1
+			list.__delitem__(self, idx)
+		else:
+			list.__delitem__(self, idx)
 	def play(self, begin = None):
 		def on_status_changed(player):
 			if player['status'] == player.STOPPED:
@@ -49,9 +58,11 @@ class Playlist(list):
 		if self._state == self.PLAYING: 
 			self._state = self.STOPPED
 			self._player.stop()
-	def skip(self):
+	def skip(self, forward = True):
 		if self._state == self.PLAYING:
-			self._player.stop()
+			if forward: self._player.stop()	
+			elif not self.loop: self.play(max(self._current - 1, 0))
+			else: self.play((len(self) - 1 + self._current) % len(self))
 	def append(self, disp_name, artist, duration, url):
 		list.append(self, PlaylistItem(disp_name, artist, duration, url))
 	def __getitem__(self, key):
@@ -64,9 +75,3 @@ class Playlist(list):
 		pickle.dump([item for item in self], fout, pickle.HIGHEST_PROTOCOL)
 	def load(self, fin):
 		for item in pickle.load(fin): list.append(self, item)
-pl = Playlist()
-pl.append("yifuzhiming", "zhoujielun", 123, "http://localhost:8000/KSqKHwTaDrQXHlY52TRwsA==/7704277977980035.mp3")
-pl.append("wodegeshengli", "quwanting", 234, "http://localhost:8000/VpNWWjzlqL9mvAryWrIfBw==/5708664371463047.mp3")
-pl.loop = True
-pl.save(file("/tmp/pl.dat", "wb"))
-

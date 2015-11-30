@@ -1,5 +1,5 @@
 import api
-import config
+import options
 
 def setopt(**kwargs):
-	config.setopt(kwargs)
+	options.setopt(kwargs)

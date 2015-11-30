@@ -40,6 +40,7 @@ class HttpClient(client.Client):
 		self._curl.setopt(self._curl.URL, self._url)
 		self._curl.setopt(self._curl.WRITEFUNCTION, on_data_received)
 		self._curl.setopt(self._curl.TIMEOUT, getopt("Timeout"))
+		self._curl.setopt(self._curl.FOLLOWLOCATION, 1)
 		if getopt("Proxies"): 
 			self._curl.setopt(self._curl.PROXY, getopt("Proxies"))
 	def __del__(self):

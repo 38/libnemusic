@@ -45,7 +45,7 @@ class Playlist(list):
 			self._sc_handler(player)
 		if begin != None:
 			if begin < 0: 
-				slef._state = self.STOPPED
+				self._state = self.STOPPED
 				return
 			self._current = begin
 		self._state = self.PLAYING

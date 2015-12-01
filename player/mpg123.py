@@ -73,7 +73,7 @@ class Mpg123:
 		self._thread.daemon = True
 		self._thread.start()
 	def _send_cmd(self, *cmd):
-		sys.stdout.write(" ".join(cmd)); sys.stdout.write("\n")	
+		#sys.stdout.write(" ".join(cmd)); sys.stdout.write("\n")	
 		self._proc.stdin.write(" ".join(cmd))
 		self._proc.stdin.write("\n")
 		self._proc.stdin.flush()

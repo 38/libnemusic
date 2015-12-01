@@ -22,7 +22,7 @@ class CacheClient(client.Client):
 		while True:
 			next_block = self._cache_file.read(block_size)
 			if not next_block:
-				if self._cache_mode == self._cache.FILE_OPEN and self.isopenstatus(path): time.sleep(0.1)
+				if self._cache_mode == self._cache.FILE_OPEN and self._cache.isopenstatus(path): time.sleep(0.1)
 				else: break
 			self._write_func(next_block)
 		self._cache_file.close()

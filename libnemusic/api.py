@@ -33,6 +33,10 @@ class AlbumSearchResult(RemoteResult):
 	class result(model.Dictionary):
 		albumCount = model.Integer
 		class albums(model.List): Element = model.RequireModel('Album')
+	def get_albums(self):
+		if self.code != 200: raise HTTPStatusError(self.code)
+		for album in self.result.albums:
+			yield album
 
 ###### Artists #########
 class ArtistInfo(model.NamedObject):
@@ -47,12 +51,19 @@ class Artist(model.NamedObject):
 	@RPCMethod("GET", "api/artist/", ArtistDetialResult)
 	def details(self):
 		return {"__suffix__" : self.id}
-
+	def get_hotsongs(self):
+		details = self.details()
+		if details.code != 200: raise HTTPStatusError(details.code)
+		for song in detials.hotSongs:
+			yield song
 class ArtistSearchResult(RemoteResult):
 	class result(model.Dictionary):
 		artistCount = model.Integer
 		class artists(model.List): Element = model.RequireModel('Artist')
-
+	def get_artists(self):
+		if self.code != 200: raise HTTPStatusError(self.code)
+		for artist in self.artists:
+			yield artist
 ###### Songs ###############
 class Mp3Info(model.NamedObject):
 	size      = model.Integer

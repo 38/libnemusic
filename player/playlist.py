@@ -1,6 +1,7 @@
 import mpg123
 import pickle
 import sys
+import libnemusic
 class PlaylistItem:
 	def __init__(self, disp_name, artist, duration, url):
 		self.disp_name = disp_name

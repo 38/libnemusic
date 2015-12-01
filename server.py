@@ -3,6 +3,7 @@ import BaseHTTPServer
 import client
 import traceback
 import SocketServer
+import subprocess
 
 class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 	def do_GET(self):
@@ -27,7 +28,6 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 				self.headerwritten = True
 			self.wfile.write(data)
 		try:
-			print self.headers
 			if len(path.split('/')) == 3:
 				c = client.getclient(path, _content, _header)
 				self.send_response(200)
@@ -45,7 +45,15 @@ class ServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.end_headers()
 			self.wfile.write("<html> <body>HTTP 500 - Server Internal Error <br> %s </body> </html>" % e)
 			
+
 class ThreadedHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer): pass
+
+class Service:
+	def __init__(self, server_log):
+		self._service_proc = subprocess.Popen(["./server.py"], stdout = server_log, stderr = server_log)
+	def __del__(self):
+		if self._service_proc: 
+			self._service_proc.terminate()
 
 if __name__ == "__main__":
 	server_class = ThreadedHTTPServer

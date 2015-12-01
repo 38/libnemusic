@@ -56,14 +56,12 @@ class HttpClient(client.Client):
 		try:
 			self._curl.perform()
 		except pycurl.error as e:
-			if self._chance > 0: 
+			if self._chance > 0:
+				print >> sys.stderr, "[HttpClient] Read failure: %s, take another chance from offset %d (chances left : %d)" % (e, self._current_pos ,self._chance)
 				self._chance -= 1
 				self.perform()
 			else:
+				print >> sys.stderr, "[HttpClient] No more chance for this connection at %d, give up (exception = %s)" % (self._current_pos, e)				
 				self._cache.abort(self._path)	
 				raise e	
 		self._cache.close(self._path)		
-
-if __name__ == "__main__":
-	h = HttpClient("/VpNWWjzlqL9mvAryWrIfBw==/5708664371463047.mp3", sys.stdout.write, sys.stdout.write)
-	h.perform()

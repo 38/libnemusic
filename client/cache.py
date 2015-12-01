@@ -1,5 +1,6 @@
 import os
 from options import getopt
+from sys import stderr
 
 class DataCache:
 	FILE_CLOSED = 0
@@ -26,10 +27,10 @@ class DataCache:
 	def query(self, path):
 		key = self._key(path)
 		if os.path.exists(key) and not os.path.isdir(key):
-			print "[Cache] Open unused " + key + " for read"
+			print >> stderr, "[Cache] Open unused " + key + " for read"
 			return (DataCache.FILE_CLOSED , file(key, "rb"))
 		if key in self._file_obj_dict:
-			print "[Cache] Open " + key + " for read"
+			print >> stderr, "[Cache] Open " + key + " for read"
 			return (DataCache.FILE_OPEN, file(key + ".tmp", "rb"))
 
 	def isopenstatus(self, path):
@@ -38,9 +39,9 @@ class DataCache:
 	def open(self, path):
 		key = self._key(path)
 		if key in self._file_obj_dict:
-			print "[Cache] Cache item " + path + " is already updating"
+			print >> stderr, "[Cache] Cache item " + path + " is already updating"
 			return None
-		print "[Cache] Opened cache item " + path + " for update"
+		print >> stderr, "[Cache] Opened cache item " + path + " for update"
 		temp = key + ".tmp"
 		self._file_obj_dict[key] = file(temp, "wb")
 		return self._file_obj_dict[key]
@@ -49,7 +50,7 @@ class DataCache:
 		key = self._key(path)
 		temp_key = key + ".tmp"
 		if key not in self._file_obj_dict: return
-		print "[Cache] Finished updating cache item " + path
+		print >> stderr, "[Cache] Finished updating cache item " + path
 		fp = self._file_obj_dict[key]
 		del self._file_obj_dict[key]
 		fp.close()
@@ -59,7 +60,7 @@ class DataCache:
 		key = self._key(path)
 		temp_key = key + ".tmp"
 		if key not in self._file_obj_dict: return
-		print "[Cache] Aborted cache item update for" + path
+		print >> stderr, "[Cache] Aborted cache item update for" + path
 		fp = self._file_obj_dict[key]
 		del self._file_obj_dict[key]
 		fp.close()

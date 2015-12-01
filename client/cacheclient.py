@@ -10,6 +10,7 @@ class CacheClient(client.Client):
 		self._cache_mode, self._cache_file = self._cache.query(path)
 		self._write_func = write_func
 		self._header_func =  header_func
+		self._path = path
 	def __del__(self):
 		if self._cache_file:
 			self._cache_file.close()
@@ -22,7 +23,7 @@ class CacheClient(client.Client):
 		while True:
 			next_block = self._cache_file.read(block_size)
 			if not next_block:
-				if self._cache_mode == self._cache.FILE_OPEN and self._cache.isopenstatus(path): time.sleep(0.1)
+				if self._cache_mode == self._cache.FILE_OPEN and self._cache.isopenstatus(self._path): time.sleep(0.1)
 				else: break
 			self._write_func(next_block)
 		self._cache_file.close()

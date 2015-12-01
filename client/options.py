@@ -4,7 +4,7 @@ _options = {
 		"UserAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0",
 		"Timeout"  : 15,
 		"CacheDir" : "/tmp/nemusic_datacache",
-		"Retry"    : 3
+		"Retry"    : 10
 }
 
 def setopt(kwargs):

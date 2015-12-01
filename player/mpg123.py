@@ -8,7 +8,7 @@ class Mpg123:
 	PLAYING = 2
 	def __init__(self, **kwargs):
 		arglist = [kwargs.get('executable', 'mpg123'), '-R'] + kwargs.get('args', [])
-		self._proc = subprocess.Popen(arglist, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+		self._proc = subprocess.Popen(arglist, stdin = subprocess.PIPE, stdout = subprocess.PIPE, bufsize = 1)
 		self._status = Mpg123.STOPPED
 		self._version = ""
 		self._title   = ""	
@@ -73,6 +73,7 @@ class Mpg123:
 		self._thread.daemon = True
 		self._thread.start()
 	def _send_cmd(self, *cmd):
+		sys.stdout.write(" ".join(cmd)); sys.stdout.write("\n")	
 		self._proc.stdin.write(" ".join(cmd))
 		self._proc.stdin.write("\n")
 		self._proc.stdin.flush()

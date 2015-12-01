@@ -46,11 +46,12 @@ class HttpClient(client.Client):
 	def __del__(self):
 		if self._curl:
 			self._curl.close()
-	def perform(self):
+	def perform(self, retry_attempt = False):
 		self._initialize_conn()
 		if self._current_pos > 0:
 			self._curl.setopt(self._curl.RANGE, "%d-"%self._current_pos)
 		else:
+			if !retry_attempt: self._chance = getopt("Retry")
 			self._cache_file = self._cache.open(self._path)
 			self._curl.setopt(self._curl.HEADERFUNCTION, self._header_func)
 		try:
@@ -59,7 +60,7 @@ class HttpClient(client.Client):
 			if self._chance > 0:
 				print >> sys.stderr, "[HttpClient] Read failure: %s, take another chance from offset %d (chances left : %d)" % (e, self._current_pos ,self._chance)
 				self._chance -= 1
-				self.perform()
+				self.perform(True)
 			else:
 				print >> sys.stderr, "[HttpClient] No more chance for this connection at %d, give up (exception = %s)" % (self._current_pos, e)				
 				self._cache.abort(self._path)	

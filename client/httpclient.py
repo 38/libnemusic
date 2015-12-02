@@ -51,7 +51,7 @@ class HttpClient(client.Client):
 		if self._current_pos > 0:
 			self._curl.setopt(self._curl.RANGE, "%d-"%self._current_pos)
 		else:
-			if !retry_attempt: self._chance = getopt("Retry")
+			if not retry_attempt: self._chance = getopt("Retry")
 			self._cache_file = self._cache.open(self._path)
 			self._curl.setopt(self._curl.HEADERFUNCTION, self._header_func)
 		try:
